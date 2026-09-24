@@ -1,0 +1,17 @@
+{
+  "name": "Balaji Computech - Computer Shop & Repair Center",
+  "short_name": "Balaji Computech",
+  "description": "Dewas's premier computer sales, laptop repair, CCTV installation, and custom PC gaming shop founded by Gourav Joshi.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
