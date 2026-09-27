@@ -10,46 +10,57 @@ use CodeIgniter\Database\Config;
 class Database extends Config
 {
     /**
-     * The directory that holds the Migrations and Seeds directories.
+     * Directory containing migrations and seeds.
      */
     public string $filesPath = APPPATH . 'Database' . DIRECTORY_SEPARATOR;
 
     /**
-     * Lets you choose which connection group to use if no other is specified.
+     * Default database group.
      */
     public string $defaultGroup = 'default';
 
     /**
-     * The default database connection.
+     * Default database connection.
      *
-     * @var array<string, mixed>
+     * Supports:
+     * - Local XAMPP MySQL
+     * - TiDB Cloud on Vercel
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
 
-        // MySQL credentials
+        // Database connection details
+        'hostname'     => 'localhost',
         'username'     => 'root',
         'password'     => 'prabhanshu@123',
-
-        // CHANGE THIS to your actual database name
         'database'     => 'balaji_computech',
 
+        // Database driver
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
-        'DBDebug'      => true,
+
+        // Show detailed errors only outside production
+        'DBDebug'      => (ENVIRONMENT !== 'production'),
+
+        // Character set
         'charset'      => 'utf8mb4',
         'DBCollat'     => 'utf8mb4_general_ci',
+
         'swapPre'      => '',
-        'encrypt'      => false,
+
+        // SSL enabled for TiDB Cloud
+        'encrypt'      => true,
+
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
         'port'         => 3306,
+
         'numberNative' => false,
         'foundRows'    => false,
 
+        // Date format
         'dateFormat'   => [
             'date'     => 'Y-m-d',
             'datetime' => 'Y-m-d H:i:s',
@@ -59,8 +70,6 @@ class Database extends Config
 
     /**
      * Database connection used for PHPUnit tests.
-     *
-     * @var array<string, mixed>
      */
     public array $tests = [
         'DSN'         => '',
@@ -91,13 +100,48 @@ class Database extends Config
         ],
     ];
 
+    /**
+     * Initialize database configuration.
+     */
     public function __construct()
     {
         parent::__construct();
 
-        // Use the test database when running automated tests.
+        // Use the testing database during automated tests.
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
+            return;
         }
+
+        // Read Vercel environment variables.
+        $this->default['hostname'] = env(
+            'DATABASE_DEFAULT_HOSTNAME',
+            'localhost'
+        );
+
+        $this->default['username'] = env(
+            'DATABASE_DEFAULT_USERNAME',
+            'root'
+        );
+
+        $this->default['password'] = env(
+            'DATABASE_DEFAULT_PASSWORD',
+            ''
+        );
+
+        $this->default['database'] = env(
+            'DATABASE_DEFAULT_DATABASE',
+            'balaji_computech'
+        );
+
+        $this->default['port'] = (int) env(
+            'DATABASE_DEFAULT_PORT',
+            3306
+        );
+
+        // Enable SSL for remote database connections.
+        $this->default['encrypt'] =
+            ($this->default['hostname'] !== 'localhost'
+            && $this->default['hostname'] !== '127.0.0.1');
     }
 }
