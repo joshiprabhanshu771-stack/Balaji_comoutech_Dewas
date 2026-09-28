@@ -222,60 +222,76 @@
     </div>
 
     <!-- Website Footer -->
+    <!-- Website Footer -->
     <footer class="site-footer">
         <div class="container">
             <div class="row g-4">
                 <!-- Col 1: Shop Info -->
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-cpu-fill fs-2 text-primary"></i>
-                        <h4 class="text-white fw-bold mb-0">BALAJI COMPUTECH</h4>
+                        <div class="bg-primary text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                            <i class="bi bi-cpu-fill fs-5"></i>
+                        </div>
+                        <h4 class="text-white fw-bold mb-0 letter-spacing-1">BALAJI COMPUTECH</h4>
                     </div>
-                    <p class="text-muted small mb-3">
-                        Dewas's most dependable IT destination founded by <strong>Gourav Joshi</strong>. Authorized dealer for top laptops, custom gaming PCs, CCTV security setups, and high-precision chip-level repair services.
+                    <p class="footer-desc mb-4">
+                        Dewas's most dependable IT destination founded by <strong class="text-white">Gourav Joshi</strong>. Authorized dealer for top brand laptops, custom gaming rigs, CCTV security setups, and high-precision chip-level repair services.
                     </p>
-                    <div class="d-flex flex-column gap-2 text-muted small">
-                        <div><i class="bi bi-geo-alt-fill text-warning me-2"></i> <?= esc(get_setting('shop_address', 'Shop No. 12, Mainashree Complex, Near Netram, AB Road, Dewas, MP')) ?></div>
-                        <div><i class="bi bi-telephone-fill text-success me-2"></i> <?= esc(get_setting('contact_phone', '+91 98260 12345')) ?></div>
-                        <div><i class="bi bi-envelope-fill text-info me-2"></i> <?= esc(get_setting('contact_email', 'info@balajicomputech.com')) ?></div>
+                    <div class="footer-contact-list d-flex flex-column gap-2 mb-3">
+                        <div class="footer-contact-item d-flex align-items-start gap-2">
+                            <i class="bi bi-geo-alt-fill text-warning fs-5 flex-shrink-0 mt-1"></i>
+                            <span class="text-light-slate"><?= esc(get_setting('shop_address', 'Shop No. 12, Mainashree Complex, Near Netram, AB Road, Dewas, MP - 455001')) ?></span>
+                        </div>
+                        <div class="footer-contact-item d-flex align-items-center gap-2">
+                            <i class="bi bi-telephone-fill text-success fs-5 flex-shrink-0"></i>
+                            <a href="tel:<?= esc(get_setting('contact_phone', '+919826012345')) ?>" class="text-light-slate text-decoration-none fw-semibold">
+                                <?= esc(get_setting('contact_phone', '+91 98260 12345')) ?>
+                            </a>
+                        </div>
+                        <div class="footer-contact-item d-flex align-items-center gap-2">
+                            <i class="bi bi-envelope-fill text-info fs-5 flex-shrink-0"></i>
+                            <a href="mailto:<?= esc(get_setting('contact_email', 'info@balajicomputech.com')) ?>" class="text-light-slate text-decoration-none">
+                                <?= esc(get_setting('contact_email', 'info@balajicomputech.com')) ?>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Col 2: Quick Links -->
                 <div class="col-lg-2 col-md-6">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2 small">
-                        <li><a href="<?= base_url('/') ?>"><i class="bi bi-chevron-right me-1 text-primary"></i> Home</a></li>
-                        <li><a href="<?= base_url('products') ?>"><i class="bi bi-chevron-right me-1 text-primary"></i> Products Catalog</a></li>
-                        <li><a href="<?= base_url('services') ?>"><i class="bi bi-chevron-right me-1 text-primary"></i> Repair Services</a></li>
-                        <li><a href="<?= base_url('brands') ?>"><i class="bi bi-chevron-right me-1 text-primary"></i> Brands & Partners</a></li>
-                        <li><a href="<?= base_url('offers') ?>"><i class="bi bi-chevron-right me-1 text-primary"></i> Deals & Offers</a></li>
-                        <li><a href="<?= base_url('our-presence') ?>"><i class="bi bi-chevron-right me-1 text-primary"></i> Store Location</a></li>
-                        <li><a href="<?= base_url('faq') ?>"><i class="bi bi-chevron-right me-1 text-primary"></i> FAQs</a></li>
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links list-unstyled d-flex flex-column gap-2 small">
+                        <li><a href="<?= base_url('/') ?>"><i class="bi bi-chevron-right text-primary me-1"></i> Home</a></li>
+                        <li><a href="<?= base_url('products') ?>"><i class="bi bi-chevron-right text-primary me-1"></i> Products Catalog</a></li>
+                        <li><a href="<?= base_url('services') ?>"><i class="bi bi-chevron-right text-primary me-1"></i> Repair Services</a></li>
+                        <li><a href="<?= base_url('brands') ?>"><i class="bi bi-chevron-right text-primary me-1"></i> Brands & Partners</a></li>
+                        <li><a href="<?= base_url('offers') ?>"><i class="bi bi-chevron-right text-primary me-1"></i> Deals & Offers</a></li>
+                        <li><a href="<?= base_url('our-presence') ?>"><i class="bi bi-chevron-right text-primary me-1"></i> Store Location</a></li>
+                        <li><a href="<?= base_url('faq') ?>"><i class="bi bi-chevron-right text-primary me-1"></i> FAQs</a></li>
                     </ul>
                 </div>
 
                 <!-- Col 3: Hardware & Services -->
                 <div class="col-lg-3 col-md-6">
-                    <h5>Categories & Solutions</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2 small">
-                        <li><a href="<?= base_url('products?category=laptops') ?>"><i class="bi bi-laptop me-2"></i> Laptops & Notebooks</a></li>
-                        <li><a href="<?= base_url('products?category=desktop-pcs') ?>"><i class="bi bi-pc-display me-2"></i> Desktop & Workstations</a></li>
-                        <li><a href="<?= base_url('products?category=pc-components') ?>"><i class="bi bi-cpu me-2"></i> PC Components & CPUs</a></li>
-                        <li><a href="<?= base_url('products?category=cctv-security') ?>"><i class="bi bi-camera-video me-2"></i> CCTV & Security Systems</a></li>
-                        <li><a href="<?= base_url('services/chip-level-laptop-motherboard-repair') ?>"><i class="bi bi-tools me-2"></i> Chip-Level Motherboard Repair</a></li>
-                        <li><a href="<?= base_url('services/custom-pc-build-gaming-assembly') ?>"><i class="bi bi-gear-wide-connected me-2"></i> Custom PC Assembling</a></li>
+                    <h5 class="footer-title">Categories & Solutions</h5>
+                    <ul class="footer-links list-unstyled d-flex flex-column gap-2 small">
+                        <li><a href="<?= base_url('products?category=laptops') ?>"><i class="bi bi-laptop text-info me-2"></i> Laptops & Notebooks</a></li>
+                        <li><a href="<?= base_url('products?category=desktop-pcs') ?>"><i class="bi bi-pc-display text-info me-2"></i> Desktop & Workstations</a></li>
+                        <li><a href="<?= base_url('products?category=pc-components') ?>"><i class="bi bi-cpu text-info me-2"></i> PC Components & CPUs</a></li>
+                        <li><a href="<?= base_url('products?category=cctv-security') ?>"><i class="bi bi-camera-video text-info me-2"></i> CCTV & Security Systems</a></li>
+                        <li><a href="<?= base_url('services/chip-level-laptop-motherboard-repair') ?>"><i class="bi bi-tools text-warning me-2"></i> Motherboard Repair Lab</a></li>
+                        <li><a href="<?= base_url('services/custom-pc-build-gaming-assembly') ?>"><i class="bi bi-gear-wide-connected text-warning me-2"></i> Custom Gaming PC Build</a></li>
                     </ul>
                 </div>
 
                 <!-- Col 4: Shop Timing & Inquiry Direct -->
                 <div class="col-lg-3 col-md-6">
-                    <h5>Working Hours & Help</h5>
-                    <div class="bg-dark p-3 rounded-3 mb-3 border border-secondary border-opacity-25 small text-light">
-                        <div class="fw-bold text-info mb-1"><i class="bi bi-clock me-1"></i> Shop Timings:</div>
-                        <div><?= esc(get_setting('opening_hours', 'Mon - Sat: 10:00 AM - 08:30 PM | Sun: 11:00 AM - 04:00 PM')) ?></div>
+                    <h5 class="footer-title">Working Hours & Help</h5>
+                    <div class="footer-hours-box p-3 rounded-3 mb-3">
+                        <div class="fw-bold text-warning mb-1"><i class="bi bi-clock-history me-1"></i> Shop Timings:</div>
+                        <div class="text-white-strong small"><?= esc(get_setting('opening_hours', 'Mon - Sat: 10:00 AM - 08:30 PM | Sun: 11:00 AM - 04:00 PM')) ?></div>
                     </div>
-                    <a href="<?= get_whatsapp_url('Hello Gourav Joshi, I need assistance regarding computer sales/repair.') ?>" target="_blank" class="btn btn-success w-100 fw-bold py-2 mb-2 d-flex align-items-center justify-content-center gap-2">
+                    <a href="<?= get_whatsapp_url('Hello Gourav Joshi, I need assistance regarding computer sales/repair.') ?>" target="_blank" class="btn btn-success w-100 fw-bold py-2 mb-2 d-flex align-items-center justify-content-center gap-2 shadow-sm">
                         <i class="bi bi-whatsapp fs-5"></i> Chat on WhatsApp
                     </a>
                     <a href="<?= base_url('contact') ?>" class="btn btn-outline-light w-100 fw-semibold py-2">
@@ -286,10 +302,10 @@
 
             <!-- Footer Bottom -->
             <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                    &copy; <?= date('Y') ?> <strong>Balaji Computech</strong>. Owned & Managed by <strong>Gourav Joshi</strong>. All rights reserved.
+                <div class="footer-copy">
+                    &copy; <?= date('Y') ?> <strong class="text-white">Balaji Computech</strong>. Owned & Managed by <strong class="text-white">Gourav Joshi</strong>. All rights reserved.
                 </div>
-                <div class="d-flex gap-3">
+                <div class="footer-legal-links d-flex gap-3">
                     <a href="<?= base_url('page/about-us') ?>">About Us</a>
                     <a href="<?= base_url('page/terms-and-conditions') ?>">Terms</a>
                     <a href="<?= base_url('page/privacy-policy') ?>">Privacy Policy</a>

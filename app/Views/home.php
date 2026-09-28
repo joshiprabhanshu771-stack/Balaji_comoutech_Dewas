@@ -190,26 +190,31 @@
         <div class="row g-4">
             <?php foreach ($services as $srv): ?>
                 <div class="col-md-6 col-lg-4">
-                    <div class="service-card h-100 d-flex flex-direction-column justify-content-between">
-                        <div>
-                            <div class="service-icon-box">
-                                <i class="<?= esc($srv['icon'] ?: 'bi bi-tools') ?>"></i>
+                    <div class="service-card">
+                        <div class="service-card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="service-icon-box">
+                                    <i class="<?= esc($srv['icon'] ?: 'bi bi-tools') ?>"></i>
+                                </div>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded-pill small">
+                                    <i class="bi bi-patch-check-fill me-1"></i> Lab Certified
+                                </span>
                             </div>
-                            <h4 class="fw-bold text-dark mb-2"><?= esc($srv['name']) ?></h4>
-                            <p class="text-muted small mb-3"><?= esc($srv['short_description']) ?></p>
+                            <h4 class="service-title"><?= esc($srv['name']) ?></h4>
+                            <p class="service-desc"><?= esc($srv['short_description']) ?></p>
 
-                            <div class="d-flex align-items-center justify-content-between bg-light p-2 rounded-3 mb-3 small">
-                                <span><i class="bi bi-clock-history text-primary me-1"></i> <strong><?= esc($srv['turnaround_time'] ?: 'Same Day') ?></strong></span>
-                                <span class="text-success fw-bold">From ₹<?= number_format($srv['starting_price'], 2) ?></span>
+                            <div class="service-meta-box d-flex align-items-center justify-content-between p-2 px-3 rounded-3 mb-3">
+                                <span class="small text-secondary"><i class="bi bi-clock-history text-primary me-1"></i> <strong><?= esc($srv['turnaround_time'] ?: 'Same Day') ?></strong></span>
+                                <span class="text-success fw-bold small">From ₹<?= number_format($srv['starting_price'], 2) ?></span>
                             </div>
                         </div>
 
-                        <div class="d-flex gap-2">
-                            <a href="<?= base_url('services/' . esc($srv['slug'])) ?>" class="btn btn-outline-primary btn-sm fw-bold w-100">
-                                View Details
+                        <div class="service-card-actions">
+                            <a href="<?= base_url('services/' . esc($srv['slug'])) ?>" class="btn btn-outline-primary btn-sm fw-semibold flex-fill py-2 text-center">
+                                <i class="bi bi-info-circle me-1"></i> View Details
                             </a>
-                            <button type="button" class="btn btn-primary btn-sm fw-bold w-100" data-bs-toggle="modal" data-bs-target="#inquiryModal" data-service-id="<?= $srv['id'] ?>" data-service-name="<?= esc($srv['name']) ?>">
-                                Book Service
+                            <button type="button" class="btn btn-primary btn-sm fw-semibold flex-fill py-2 text-center" data-bs-toggle="modal" data-bs-target="#inquiryModal" data-service-id="<?= $srv['id'] ?>" data-service-name="<?= esc($srv['name']) ?>">
+                                <i class="bi bi-calendar-check me-1"></i> Book Service
                             </button>
                         </div>
                     </div>

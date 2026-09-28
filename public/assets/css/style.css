@@ -253,27 +253,70 @@ body {
 /* SERVICE CARD */
 .service-card {
     padding: 24px;
-    border-radius: 14px;
+    border-radius: 16px;
     background: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     transition: var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 .service-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--card-hover-shadow);
-    border-color: var(--secondary-color);
+    border-color: #93c5fd;
+}
+.service-card-body {
+    flex-grow: 1;
 }
 .service-icon-box {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    background: var(--primary-light);
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
     color: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.75rem;
-    margin-bottom: 18px;
+    font-size: 1.5rem;
+    border: 1px solid #bfdbfe;
+    transition: var(--transition-smooth);
+}
+.service-card:hover .service-icon-box {
+    background: var(--primary-color);
+    color: #ffffff;
+    transform: scale(1.05);
+}
+.service-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+.service-desc {
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+.service-meta-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+.service-card-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
+}
+.service-card-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
 }
 
 /* SECTION HEADINGS */
@@ -350,30 +393,90 @@ body {
 
 /* FOOTER */
 .site-footer {
-    background: #091322;
-    color: #94a3b8;
-    padding: 60px 0 20px;
+    background: #0b172a;
+    color: #cbd5e1;
+    padding: 60px 0 25px;
     font-size: 0.92rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
-.site-footer h5 {
+.site-footer .letter-spacing-1 {
+    letter-spacing: 0.5px;
+}
+.site-footer .footer-title {
     color: #ffffff;
     font-weight: 700;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     font-size: 1.1rem;
+    position: relative;
+    padding-bottom: 8px;
 }
-.site-footer a {
-    color: #94a3b8;
-    text-decoration: none;
+.site-footer .footer-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 32px;
+    height: 2px;
+    background: var(--accent-color);
+    border-radius: 2px;
+}
+.site-footer .footer-desc {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.site-footer .text-light-slate {
+    color: #e2e8f0 !important;
+}
+.site-footer .footer-contact-item {
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+.site-footer .footer-contact-item a {
+    color: #e2e8f0;
     transition: var(--transition-smooth);
 }
-.site-footer a:hover {
+.site-footer .footer-contact-item a:hover {
     color: #38bdf8;
 }
-.footer-bottom {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+.site-footer .footer-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    display: inline-block;
+    padding: 2px 0;
+}
+.site-footer .footer-links a:hover {
+    color: #38bdf8;
+    transform: translateX(4px);
+}
+.site-footer .footer-hours-box {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(4px);
+}
+.site-footer .text-white-strong {
+    color: #f8fafc !important;
+    font-weight: 500;
+}
+.site-footer .footer-bottom {
+    margin-top: 45px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.88rem;
+    color: #cbd5e1;
+}
+.site-footer .footer-copy {
+    color: #cbd5e1;
+}
+.site-footer .footer-legal-links a {
+    color: #cbd5e1;
+    text-decoration: none;
     font-size: 0.85rem;
+    transition: var(--transition-smooth);
+}
+.site-footer .footer-legal-links a:hover {
+    color: #38bdf8;
 }
 
 /* ADMIN SIDEBAR & LAYOUT */
