@@ -2,10 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/index.php": {
-      "runtime": "vercel-php@0.9.0"
+      "runtime": "vercel-php@0.9.0",
+      "maxDuration": 15
     }
   },
   "routes": [
+    {
+      "src": "/(assets/.*|uploads/.*|favicon.ico|robots.txt|manifest.json|manifest.webmanifest|firebase-messaging-sw.js|firebase-config.js)",
+      "dest": "/public/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "/api/index.php"

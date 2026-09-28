@@ -4,63 +4,33 @@ namespace Config;
 
 use CodeIgniter\Database\Config;
 
-/**
- * Database Configuration
- */
 class Database extends Config
 {
-    /**
-     * Directory containing migrations and seeds.
-     */
     public string $filesPath = APPPATH . 'Database' . DIRECTORY_SEPARATOR;
 
-    /**
-     * Default database group.
-     */
     public string $defaultGroup = 'default';
 
-    /**
-     * Default database connection.
-     *
-     * Supports:
-     * - Local XAMPP MySQL
-     * - TiDB Cloud on Vercel
-     */
     public array $default = [
         'DSN'          => '',
-
-        // Database connection details
         'hostname'     => 'localhost',
         'username'     => 'root',
-        'password'     => 'prabhanshu@123',
+        'password'     => '',
         'database'     => 'balaji_computech',
-
-        // Database driver
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
-
-        // Show detailed errors only outside production
         'DBDebug'      => (ENVIRONMENT !== 'production'),
-
-        // Character set
         'charset'      => 'utf8mb4',
         'DBCollat'     => 'utf8mb4_general_ci',
-
         'swapPre'      => '',
-
-        // SSL enabled for TiDB Cloud
-        'encrypt'      => true,
-
+        'encrypt'      => false,
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
         'port'         => 3306,
-
         'numberNative' => false,
         'foundRows'    => false,
 
-        // Date format
         'dateFormat'   => [
             'date'     => 'Y-m-d',
             'datetime' => 'Y-m-d H:i:s',
@@ -68,9 +38,6 @@ class Database extends Config
         ],
     ];
 
-    /**
-     * Database connection used for PHPUnit tests.
-     */
     public array $tests = [
         'DSN'         => '',
         'hostname'    => '127.0.0.1',
@@ -100,48 +67,62 @@ class Database extends Config
         ],
     ];
 
-    /**
-     * Initialize database configuration.
-     */
     public function __construct()
     {
         parent::__construct();
 
-        // Use the testing database during automated tests.
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
             return;
         }
 
-        // Read Vercel environment variables.
-        $this->default['hostname'] = env(
-            'DATABASE_DEFAULT_HOSTNAME',
-            'localhost'
-        );
+        // Support both Vercel environment variables (DATABASE_DEFAULT_*) and CI4 .env format (database.default.*)
+        $hostname = env('DATABASE_DEFAULT_HOSTNAME', env('database.default.hostname', $this->default['hostname'] ?? 'localhost'));
+        $username = env('DATABASE_DEFAULT_USERNAME', env('database.default.username', $this->default['username'] ?? 'root'));
+        $password = env('DATABASE_DEFAULT_PASSWORD', env('database.default.password', $this->default['password'] ?? ''));
+        $database = env('DATABASE_DEFAULT_DATABASE', env('database.default.database', $this->default['database'] ?? 'balaji_computech'));
+        $port     = (int) env('DATABASE_DEFAULT_PORT', env('database.default.port', $this->default['port'] ?? 3306));
 
-        $this->default['username'] = env(
-            'DATABASE_DEFAULT_USERNAME',
-            'root'
-        );
+        $this->default['hostname'] = $hostname;
+        $this->default['username'] = $username;
+        $this->default['password'] = $password;
+        $this->default['database'] = $database;
+        $this->default['port']     = $port;
 
-        $this->default['password'] = env(
-            'DATABASE_DEFAULT_PASSWORD',
-            ''
-        );
+        // Determine if SSL is needed (TiDB Cloud / remote database)
+        $isRemoteHost = ($hostname !== 'localhost' && $hostname !== '127.0.0.1' && !empty($hostname));
+        $sslRequired  = filter_var(env('DATABASE_DEFAULT_SSL', env('database.default.encrypt', $isRemoteHost)), FILTER_VALIDATE_BOOLEAN);
 
-        $this->default['database'] = env(
-            'DATABASE_DEFAULT_DATABASE',
-            'balaji_computech'
-        );
+        if ($sslRequired) {
+            $sslVerify = filter_var(env('DATABASE_DEFAULT_SSL_VERIFY', env('database.default.ssl_verify', true)), FILTER_VALIDATE_BOOLEAN);
+            $sslCa     = (string) env('DATABASE_DEFAULT_SSL_CA', env('database.default.ssl_ca', ''));
 
-        $this->default['port'] = (int) env(
-            'DATABASE_DEFAULT_PORT',
-            3306
-        );
+            // Auto-detect system CA bundle on Linux/Lambda/Vercel if not explicitly provided
+            if (empty($sslCa)) {
+                $caLocations = [
+                    '/etc/pki/tls/certs/ca-bundle.crt',   // Amazon Linux 2 / Vercel Lambda
+                    '/etc/ssl/certs/ca-certificates.crt', // Debian / Ubuntu
+                    '/etc/ssl/cert.pem',                  // Alpine / macOS
+                ];
+                foreach ($caLocations as $loc) {
+                    if (is_file($loc) && is_readable($loc)) {
+                        $sslCa = $loc;
+                        break;
+                    }
+                }
+            }
 
-        // Enable SSL for remote database connections.
-        $this->default['encrypt'] =
-            ($this->default['hostname'] !== 'localhost'
-            && $this->default['hostname'] !== '127.0.0.1');
+            // CodeIgniter 4 MySQLi driver requires an array to properly set MYSQLI_CLIENT_SSL flag
+            $sslOptions = [
+                'ssl_verify' => $sslVerify,
+            ];
+            if (!empty($sslCa)) {
+                $sslOptions['ssl_ca'] = $sslCa;
+            }
+
+            $this->default['encrypt'] = $sslOptions;
+        } else {
+            $this->default['encrypt'] = false;
+        }
     }
 }

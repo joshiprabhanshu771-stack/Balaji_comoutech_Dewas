@@ -40,7 +40,7 @@ class App extends BaseConfig
      * something else. If you have configured your web server to remove this file
      * from your site URIs, set this variable to an empty string.
      */
-    public string $indexPage = 'index.php';
+    public string $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -199,4 +199,20 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Support both APP_BASE_URL (Vercel standard) and app.baseURL (.env standard)
+        $configuredBaseUrl = env('APP_BASE_URL', env('app.baseURL', ''));
+        if (!empty($configuredBaseUrl)) {
+            $this->baseURL = rtrim($configuredBaseUrl, '/') . '/';
+        }
+
+        $configuredIndexPage = env('app.indexPage', null);
+        if ($configuredIndexPage !== null) {
+            $this->indexPage = $configuredIndexPage;
+        }
+    }
 }

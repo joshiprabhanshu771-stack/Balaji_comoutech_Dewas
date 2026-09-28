@@ -87,4 +87,30 @@ class Paths
      * value - the directory should not be publicly accessible.
      */
     public string $envDirectory = __DIR__ . '/../../';
+
+    public function __construct()
+    {
+        // On Vercel / AWS Lambda serverless runtime, the root filesystem is read-only.
+        // Redirect writable directory to /tmp/ci4_writable where write permissions exist.
+        if (
+            isset($_ENV['VERCEL']) ||
+            getenv('VERCEL') !== false ||
+            isset($_SERVER['VERCEL']) ||
+            isset($_ENV['AWS_LAMBDA_FUNCTION_NAME']) ||
+            getenv('AWS_LAMBDA_FUNCTION_NAME') !== false
+        ) {
+            $tmpWritable = '/tmp/ci4_writable';
+            $this->writableDirectory = $tmpWritable;
+
+            if (!is_dir($tmpWritable)) {
+                @mkdir($tmpWritable, 0777, true);
+            }
+            foreach (['cache', 'logs', 'session', 'uploads', 'debugbar', 'firebase'] as $sub) {
+                $dir = $tmpWritable . '/' . $sub;
+                if (!is_dir($dir)) {
+                    @mkdir($dir, 0777, true);
+                }
+            }
+        }
+    }
 }
