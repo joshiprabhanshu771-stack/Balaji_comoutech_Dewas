@@ -9,6 +9,8 @@ use CodeIgniter\Router\RouteCollection;
 // Public Frontend Routes
 $routes->get('/', 'Home::index');
 $routes->get('our-presence', 'Home::presence');
+$routes->get('presence', 'Home::presence');
+$routes->get('store-location', 'Home::presence');
 
 // Products
 $routes->get('products', 'Product::index');
@@ -27,6 +29,7 @@ $routes->get('offers', 'Offer::index');
 
 // FAQs
 $routes->get('faq', 'Faq::index');
+$routes->get('faqs', 'Faq::index');
 
 // Contact Us
 $routes->get('contact', 'Contact::index');
@@ -37,6 +40,13 @@ $routes->post('inquiry/submit', 'Inquiry::submit');
 
 // Static / Content Pages
 $routes->get('page/(:segment)', 'Page::view/$1');
+$routes->get('pages/(:segment)', 'Page::view/$1');
+$routes->get('about-us', 'Page::view/about-us');
+$routes->get('terms-and-conditions', 'Page::view/terms-and-conditions');
+$routes->get('privacy-policy', 'Page::view/privacy-policy');
+$routes->get('return-and-inquiry-policy', 'Page::view/return-and-inquiry-policy');
+$routes->get('disclaimer', 'Page::view/disclaimer');
+
 
 // Authentication Routes
 $routes->get('auth/login', 'Auth::login');

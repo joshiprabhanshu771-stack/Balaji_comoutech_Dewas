@@ -32,11 +32,11 @@
                 <div class="p-3 bg-light rounded-3 d-flex flex-wrap gap-4 align-items-center justify-content-between mb-4 border">
                     <div>
                         <span class="text-muted small d-block">Estimated Turnaround:</span>
-                        <strong class="text-dark fs-6"><i class="bi bi-clock-history text-primary me-1"></i> <?= esc($service['turnaround_time'] ?: '24 - 48 Hours') ?></strong>
+                        <strong class="text-dark fs-6"><i class="bi bi-clock-history text-primary me-1"></i> <?= esc($service['turnaround_time'] ?? '24 - 48 Hours') ?></strong>
                     </div>
                     <div>
                         <span class="text-muted small d-block">Starting Estimate:</span>
-                        <strong class="text-success fs-5">₹<?= number_format($service['starting_price'], 2) ?></strong>
+                        <strong class="text-success fs-5">₹<?= number_format((float)($service['starting_price'] ?? 0), 2) ?></strong>
                     </div>
                     <div>
                         <span class="text-muted small d-block">Service Location:</span>
@@ -45,14 +45,20 @@
                 </div>
 
                 <div class="service-content mb-4">
-                    <?= $service['full_description'] ? $service['full_description'] : '<p class="text-muted">' . nl2br(esc($service['short_description'])) . '</p>' ?>
+                    <?php if (!empty($service['description'])): ?>
+                        <?= $service['description'] ?>
+                    <?php elseif (!empty($service['full_description'])): ?>
+                        <?= $service['full_description'] ?>
+                    <?php elseif (!empty($service['short_description'])): ?>
+                        <p class="text-muted"><?= nl2br(esc($service['short_description'])) ?></p>
+                    <?php endif; ?>
                 </div>
 
                 <?php if (!empty($service['features'])): ?>
                     <div class="mb-4">
                         <h5 class="fw-bold text-dark mb-3">Service Highlights & Guarantees:</h5>
                         <ul class="list-group list-group-flush border rounded-3">
-                            <?php foreach (explode("\n", $service['features']) as $feat): ?>
+                            <?php foreach (explode("\n", (string)$service['features']) as $feat): ?>
                                 <?php if (trim($feat) !== ''): ?>
                                     <li class="list-group-item d-flex align-items-center gap-2 small">
                                         <i class="bi bi-check-circle-fill text-success"></i> <?= esc(trim($feat)) ?>
@@ -62,6 +68,7 @@
                         </ul>
                     </div>
                 <?php endif; ?>
+
 
                 <div class="row g-3 pt-3 border-top">
                     <div class="col-md-6">

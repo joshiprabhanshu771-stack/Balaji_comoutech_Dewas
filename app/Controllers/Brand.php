@@ -19,7 +19,12 @@ class Brand extends BaseController
 
     public function index()
     {
-        $brands = $this->brandModel->getActiveBrands();
+        try {
+            $brands = $this->brandModel->getActiveBrands();
+        } catch (\Throwable $e) {
+            log_message('error', 'Brand::index error: ' . $e->getMessage());
+            $brands = [];
+        }
 
         return view('brands/index', [
             'page_title' => 'Authorized Brands & Partners | Balaji Computech',
@@ -29,19 +34,34 @@ class Brand extends BaseController
 
     public function detail($slug)
     {
-        $brand = $this->brandModel->where('slug', $slug)->where('is_active', 1)->first();
+        try {
+            $brand = $this->brandModel->where('slug', $slug)->where('is_active', 1)->first();
+        } catch (\Throwable $e) {
+            log_message('error', 'Brand::detail error: ' . $e->getMessage());
+            $brand = null;
+        }
+
         if (!$brand) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Brand not found: ' . $slug);
         }
 
-        $products = $this->productModel->getFilteredProducts(['brand_slug' => $slug], 20);
+        try {
+            $products = $this->productModel->getFilteredProducts(['brand_slug' => $slug], 20);
+        } catch (\Throwable $e) {
+            log_message('error', 'Brand::detail products error: ' . $e->getMessage());
+            $products = [];
+        }
 
         // User Wishlist
         $userWishlistIds = [];
         if (session()->get('isLoggedIn')) {
-            $wishlistItemModel = new WishlistItemModel();
-            $items = $wishlistItemModel->getUserWishlistItems(session()->get('user_id'));
-            $userWishlistIds = array_column($items, 'product_id');
+            try {
+                $wishlistItemModel = new WishlistItemModel();
+                $items = $wishlistItemModel->getUserWishlistItems(session()->get('user_id'));
+                $userWishlistIds = array_column($items, 'product_id');
+            } catch (\Throwable $e) {
+                $userWishlistIds = [];
+            }
         }
 
         return view('brands/detail', [
@@ -51,4 +71,5 @@ class Brand extends BaseController
             'userWishlistIds' => $userWishlistIds,
         ]);
     }
+
 }

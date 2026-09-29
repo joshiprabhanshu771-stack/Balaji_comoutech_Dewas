@@ -30,8 +30,8 @@
                         <p class="service-desc"><?= esc($srv['short_description']) ?></p>
 
                         <div class="service-meta-box d-flex align-items-center justify-content-between p-2 px-3 rounded-3 mb-3">
-                            <span class="small text-secondary"><i class="bi bi-clock-history text-primary me-1"></i> <strong><?= esc($srv['turnaround_time'] ?: 'Same Day') ?></strong></span>
-                            <span class="text-success fw-bold small">From ₹<?= number_format($srv['starting_price'], 2) ?></span>
+                            <span class="small text-secondary"><i class="bi bi-clock-history text-primary me-1"></i> <strong><?= esc($srv['turnaround_time'] ?? 'Same Day') ?></strong></span>
+                            <span class="text-success fw-bold small">From ₹<?= number_format((float)($srv['starting_price'] ?? 0), 2) ?></span>
                         </div>
                     </div>
 
