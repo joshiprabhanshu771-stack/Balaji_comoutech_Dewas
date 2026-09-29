@@ -34,7 +34,7 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold small">Shop / Website Name</label>
-                        <input type="text" name="settings[site_name]" class="form-control" value="<?= esc($settings['site_name'] ?? 'Balaji Computech') ?>">
+                        <input type="text" name="settings[site_name]" class="form-control" value="<?= esc($settings['site_name'] ?? 'Balaji Computech') ?>" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold small">Proprietor / Owner Name</label>
@@ -58,17 +58,25 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold small">Helpline Phone Number</label>
-                        <input type="tel" name="settings[contact_phone]" class="form-control" value="<?= esc($settings['contact_phone'] ?? '') ?>">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold text-muted">+91</span>
+                            <input type="tel" name="settings[contact_phone]" class="form-control" value="<?= esc(ltrim($settings['contact_phone'] ?? '', '+91')) ?>" placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
+                        </div>
+                        <div class="form-text small">Accepts 10-digit number (e.g. 9826012345) or +919826012345.</div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold small">WhatsApp Number (with country code, e.g. 919826012345)</label>
-                        <input type="text" name="settings[whatsapp_number]" class="form-control font-monospace" value="<?= esc($settings['whatsapp_number'] ?? '') ?>">
+                        <label class="form-label fw-semibold small">WhatsApp Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold text-muted">+91</span>
+                            <input type="tel" name="settings[whatsapp_number]" class="form-control font-monospace" value="<?= esc(ltrim($settings['whatsapp_number'] ?? '', '+91')) ?>" placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
+                        </div>
+                        <div class="form-text small">Normalized and stored automatically as +91XXXXXXXXXX.</div>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold small">Contact Email Address</label>
-                    <input type="email" name="settings[contact_email]" class="form-control" value="<?= esc($settings['contact_email'] ?? '') ?>">
+                    <input type="email" name="settings[contact_email]" class="form-control" value="<?= esc($settings['contact_email'] ?? '') ?>" placeholder="info@balajicomputech.com" maxlength="150">
                 </div>
 
                 <div class="mb-3">

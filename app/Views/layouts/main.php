@@ -194,7 +194,10 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Mobile Number <span class="text-danger">*</span></label>
-                                <input type="tel" name="mobile" class="form-control" required placeholder="+91 98260 00000">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light fw-bold text-muted">+91</span>
+                                    <input type="tel" name="mobile" class="form-control" required placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
+                                </div>
                             </div>
                         </div>
 

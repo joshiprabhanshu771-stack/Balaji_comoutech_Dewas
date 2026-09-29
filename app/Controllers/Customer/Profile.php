@@ -31,23 +31,31 @@ class Profile extends BaseController
 
         $rules = [
             'name'   => 'required|min_length[3]|max_length[100]',
-            'email'  => "required|valid_email|is_unique[users.email,id,{$userId}]",
-            'mobile' => 'required|min_length[10]|max_length[15]',
+            'email'  => "required|valid_email|max_length[150]|is_unique[users.email,id,{$userId}]",
+            'mobile' => 'required|indian_mobile',
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $normalizedMobile = normalize_indian_mobile((string)$this->request->getPost('mobile'));
+        if (!$normalizedMobile) {
+            return redirect()->back()->withInput()->with('errors', [
+                'mobile' => 'Please enter a valid 10-digit Indian mobile number (e.g. 9876543210 or +919876543210).',
+            ]);
+        }
+
         $this->userModel->update($userId, [
-            'name'   => trim($this->request->getPost('name')),
-            'email'  => strtolower(trim($this->request->getPost('email'))),
-            'mobile' => trim($this->request->getPost('mobile')),
+            'name'       => trim((string)$this->request->getPost('name')),
+            'email'      => strtolower(trim((string)$this->request->getPost('email'))),
+            'mobile'     => $normalizedMobile,
+            'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
         session()->set([
-            'user_name'  => trim($this->request->getPost('name')),
-            'user_email' => strtolower(trim($this->request->getPost('email'))),
+            'user_name'  => trim((string)$this->request->getPost('name')),
+            'user_email' => strtolower(trim((string)$this->request->getPost('email'))),
         ]);
 
         return redirect()->to(base_url('dashboard/profile'))->with('success', 'Profile details updated successfully!');

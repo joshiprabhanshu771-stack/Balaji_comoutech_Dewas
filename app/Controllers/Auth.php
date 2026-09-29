@@ -86,8 +86,8 @@ class Auth extends BaseController
     {
         $rules = [
             'name'             => 'required|min_length[3]|max_length[100]',
-            'email'            => 'required|valid_email|is_unique[users.email]',
-            'mobile'           => 'required|min_length[10]|max_length[15]',
+            'email'            => 'required|valid_email|max_length[150]|is_unique[users.email]',
+            'mobile'           => 'required|indian_mobile',
             'password'         => 'required|min_length[6]',
             'confirm_password' => 'required|matches[password]',
         ];
@@ -96,13 +96,22 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $normalizedMobile = normalize_indian_mobile((string)$this->request->getPost('mobile'));
+        if (!$normalizedMobile) {
+            return redirect()->back()->withInput()->with('errors', [
+                'mobile' => 'Please enter a valid 10-digit Indian mobile number (e.g. 9876543210 or +919876543210).',
+            ]);
+        }
+
         $userData = [
             'role_id'       => 2, // Default: Customer
-            'name'          => trim($this->request->getPost('name')),
-            'email'         => strtolower(trim($this->request->getPost('email'))),
-            'mobile'        => trim($this->request->getPost('mobile')),
-            'password_hash' => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT),
+            'name'          => trim((string)$this->request->getPost('name')),
+            'email'         => strtolower(trim((string)$this->request->getPost('email'))),
+            'mobile'        => $normalizedMobile,
+            'password_hash' => password_hash((string)$this->request->getPost('password'), PASSWORD_BCRYPT),
             'status'        => 'active',
+            'created_at'    => date('Y-m-d H:i:s'),
+            'updated_at'    => date('Y-m-d H:i:s'),
         ];
 
         $userId = $this->userModel->insert($userData);

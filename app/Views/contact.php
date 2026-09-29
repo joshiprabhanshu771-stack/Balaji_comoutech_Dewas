@@ -25,7 +25,7 @@
                     </div>
                     <div>
                         <h6 class="fw-bold text-dark mb-1">Physical Store Address</h6>
-                        <p class="text-muted small mb-0"><?= esc(get_setting('shop_address')) ?></p>
+                        <p class="text-muted small mb-0"><?= esc(get_setting('shop_address', 'Mainashree Complex, Near Netram, AB Road, Dewas, MP')) ?></p>
                         <span class="badge bg-light text-dark border mt-2">Landmark: <?= esc($primaryLocation['landmark'] ?? 'Near Netram, AB Road') ?></span>
                     </div>
                 </div>
@@ -36,8 +36,8 @@
                     </div>
                     <div>
                         <h6 class="fw-bold text-dark mb-1">Phone & WhatsApp</h6>
-                        <p class="text-muted small mb-1">Call: <strong><?= esc(get_setting('contact_phone')) ?></strong></p>
-                        <p class="text-muted small mb-0">WhatsApp: <strong>+<?= esc(get_setting('whatsapp_number')) ?></strong></p>
+                        <p class="text-muted small mb-1">Call: <strong><?= esc(format_indian_mobile(get_setting('contact_phone', '+919826012345'), true)) ?></strong></p>
+                        <p class="text-muted small mb-0">WhatsApp: <strong><?= esc(format_indian_mobile(get_setting('whatsapp_number', '+919826012345'), true)) ?></strong></p>
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@
                     </div>
                     <div>
                         <h6 class="fw-bold text-dark mb-1">Email Address</h6>
-                        <p class="text-muted small mb-0"><?= esc(get_setting('contact_email')) ?></p>
+                        <p class="text-muted small mb-0"><?= esc(get_setting('contact_email', 'info@balajicomputech.com')) ?></p>
                     </div>
                 </div>
 
@@ -57,7 +57,7 @@
                     </div>
                     <div>
                         <h6 class="fw-bold text-dark mb-1">Shop Timings</h6>
-                        <p class="text-muted small mb-0"><?= esc(get_setting('opening_hours')) ?></p>
+                        <p class="text-muted small mb-0"><?= esc(get_setting('opening_hours', 'Mon - Sat: 10:00 AM - 08:30 PM')) ?></p>
                     </div>
                 </div>
             </div>
@@ -80,22 +80,26 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Your Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" required placeholder="e.g. Anand Sharma" value="<?= old('name', session()->get('user_name') ?? '') ?>">
+                            <input type="text" name="name" class="form-control" required placeholder="e.g. Rahul Sharma" maxlength="100" value="<?= old('name', session()->get('user_name') ?? '') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Mobile Number <span class="text-danger">*</span></label>
-                            <input type="tel" name="mobile" class="form-control" required placeholder="+91 98260 00000" value="<?= old('mobile') ?>">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light fw-bold text-muted">+91</span>
+                                <input type="tel" name="mobile" class="form-control" required placeholder="9876543210" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric" value="<?= old('mobile') ?>">
+                            </div>
+                            <div class="form-text small">Enter your 10-digit mobile number (e.g. 9876543210).</div>
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control" required placeholder="name@example.com" value="<?= old('email', session()->get('user_email') ?? '') ?>">
+                            <input type="email" name="email" class="form-control" required placeholder="rahul@gmail.com" maxlength="150" value="<?= old('email', session()->get('user_email') ?? '') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Subject <span class="text-danger">*</span></label>
-                            <input type="text" name="subject" class="form-control" required placeholder="e.g. Motherboard repair / PC quote" value="<?= old('subject') ?>">
+                            <input type="text" name="subject" class="form-control" required placeholder="e.g. Laptop Repair / Component Availability" maxlength="200" value="<?= old('subject') ?>">
                         </div>
                     </div>
 

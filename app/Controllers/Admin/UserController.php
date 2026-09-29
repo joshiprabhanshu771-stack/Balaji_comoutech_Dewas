@@ -55,8 +55,8 @@ class UserController extends BaseController
 
         $rules = [
             'name'    => 'required|min_length[3]|max_length[100]',
-            'email'   => "required|valid_email|is_unique[users.email,id,{$id}]",
-            'mobile'  => 'required|min_length[10]|max_length[15]',
+            'email'   => "required|valid_email|max_length[150]|is_unique[users.email,id,{$id}]",
+            'mobile'  => 'required|indian_mobile',
             'role_id' => 'required|is_natural_no_zero',
             'status'  => 'required|in_list[active,inactive,blocked]',
         ];
@@ -65,12 +65,20 @@ class UserController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $normalizedMobile = normalize_indian_mobile((string)$this->request->getPost('mobile'));
+        if (!$normalizedMobile) {
+            return redirect()->back()->withInput()->with('errors', [
+                'mobile' => 'Please enter a valid 10-digit Indian mobile number (e.g. 9876543210 or +919876543210).',
+            ]);
+        }
+
         $updateData = [
-            'name'    => trim($this->request->getPost('name')),
-            'email'   => strtolower(trim($this->request->getPost('email'))),
-            'mobile'  => trim($this->request->getPost('mobile')),
-            'role_id' => (int)$this->request->getPost('role_id'),
-            'status'  => $this->request->getPost('status'),
+            'name'       => trim((string)$this->request->getPost('name')),
+            'email'      => strtolower(trim((string)$this->request->getPost('email'))),
+            'mobile'     => $normalizedMobile,
+            'role_id'    => (int)$this->request->getPost('role_id'),
+            'status'     => $this->request->getPost('status'),
+            'updated_at' => date('Y-m-d H:i:s'),
         ];
 
         $newPassword = $this->request->getPost('new_password');

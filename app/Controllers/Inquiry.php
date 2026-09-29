@@ -11,10 +11,33 @@ class Inquiry extends BaseController
     public function submit()
     {
         $rules = [
-            'name'    => 'required|min_length[3]|max_length[100]',
-            'email'   => 'required|valid_email',
-            'mobile'  => 'required|min_length[10]|max_length[15]',
-            'message' => 'required|min_length[5]',
+            'name'    => [
+                'rules'  => 'required|min_length[2]|max_length[100]',
+                'errors' => [
+                    'required' => 'Please enter your name.',
+                ],
+            ],
+            'email'   => [
+                'rules'  => 'required|valid_email|max_length[150]',
+                'errors' => [
+                    'required'    => 'Please enter your email address.',
+                    'valid_email' => 'Please enter a valid email address.',
+                ],
+            ],
+            'mobile'  => [
+                'rules'  => 'required|indian_mobile',
+                'errors' => [
+                    'required'      => 'Please enter your mobile number.',
+                    'indian_mobile' => 'Please enter a valid 10-digit Indian mobile number (e.g. 9876543210 or +919876543210).',
+                ],
+            ],
+            'message' => [
+                'rules'  => 'required|min_length[5]|max_length[5000]',
+                'errors' => [
+                    'required'   => 'Please provide your inquiry requirement details.',
+                    'min_length' => 'Message must be at least 5 characters long.',
+                ],
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -25,6 +48,20 @@ class Inquiry extends BaseController
                 ]);
             }
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $rawMobile = (string)$this->request->getPost('mobile');
+        $normalizedMobile = normalize_indian_mobile($rawMobile);
+
+        if (!$normalizedMobile) {
+            $errorMsg = 'Please enter a valid 10-digit Indian mobile number (e.g. 9876543210 or +919876543210).';
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'errors' => ['mobile' => $errorMsg],
+                ]);
+            }
+            return redirect()->back()->withInput()->with('errors', ['mobile' => $errorMsg]);
         }
 
         $inquiryModel = new InquiryModel();
@@ -40,17 +77,30 @@ class Inquiry extends BaseController
             'user_id'      => $userId,
             'product_id'   => $productId,
             'service_id'   => $serviceId,
-            'name'         => trim($this->request->getPost('name')),
-            'email'        => trim($this->request->getPost('email')),
-            'mobile'       => trim($this->request->getPost('mobile')),
-            'subject'      => trim($this->request->getPost('subject') ?? 'Product/Service Inquiry'),
-            'message'      => trim($this->request->getPost('message')),
+            'name'         => trim((string)$this->request->getPost('name')),
+            'email'        => strtolower(trim((string)$this->request->getPost('email'))),
+            'mobile'       => $normalizedMobile,
+            'subject'      => trim((string)($this->request->getPost('subject') ?? 'Product/Service Inquiry')),
+            'message'      => trim((string)$this->request->getPost('message')),
             'inquiry_type' => $inquiryType,
             'status'       => 'pending',
+            'created_at'   => date('Y-m-d H:i:s'),
+            'updated_at'   => date('Y-m-d H:i:s'),
         ];
 
-        $inquiryId = $inquiryModel->insert($data);
-        $data['id'] = $inquiryId;
+        try {
+            $inquiryId = $inquiryModel->insert($data);
+            $data['id'] = $inquiryId;
+        } catch (\Throwable $e) {
+            log_message('error', 'Inquiry::submit database error: ' . $e->getMessage());
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Unable to process your inquiry right now. Please call or WhatsApp us.',
+                ]);
+            }
+            return redirect()->back()->withInput()->with('error', 'Unable to submit your inquiry at this time.');
+        }
 
         // Determine item name for notifications
         $itemName = null;
@@ -71,12 +121,11 @@ class Inquiry extends BaseController
         // Attempt Email Notification (failsafe)
         try {
             $email = \Config\Services::email();
-            $adminEmail = get_setting('contact_email', 'info@balajicomputech.com');
+            $adminEmail = (string)get_setting('contact_email', 'info@balajicomputech.com');
             $email->setTo($adminEmail);
             $email->setFrom($data['email'], $data['name']);
             $email->setSubject("New Inquiry [{$inquiryNo}]: {$data['subject']}");
             $email->setMessage("New customer inquiry received:\n\nInquiry No: {$inquiryNo}\nName: {$data['name']}\nMobile: {$data['mobile']}\nEmail: {$data['email']}\n\nMessage:\n{$data['message']}");
-            // Non-blocking attempt
             @$email->send(false);
         } catch (\Throwable $e) {
             log_message('error', 'Inquiry email notification failed: ' . $e->getMessage());

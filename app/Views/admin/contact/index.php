@@ -10,7 +10,7 @@
     <?php if (empty($messages)): ?>
         <div class="p-5 text-center text-muted">
             <i class="bi bi-envelope-open fs-1 mb-2 d-block"></i>
-            <p>No contact messages received.</p>
+            <p class="mb-0">No contact messages received yet.</p>
         </div>
     <?php else: ?>
         <div class="table-responsive">
@@ -29,22 +29,36 @@
                 </thead>
                 <tbody>
                     <?php foreach ($messages as $msg): ?>
-                        <tr class="<?= $msg['is_read'] ? '' : 'table-warning' ?>">
-                            <td><?= $msg['id'] ?></td>
-                            <td><strong class="text-dark"><?= esc($msg['name']) ?></strong></td>
-                            <td><a href="tel:<?= esc($msg['mobile']) ?>" class="text-decoration-none text-dark"><?= esc($msg['mobile']) ?></a></td>
-                            <td><?= esc($msg['email']) ?></td>
-                            <td><div class="text-truncate" style="max-width: 250px;"><?= esc($msg['subject']) ?></div></td>
-                            <td><?= date('d M Y, h:i A', strtotime($msg['created_at'])) ?></td>
+                        <tr class="<?= !empty($msg['is_read']) ? '' : 'table-warning' ?>">
+                            <td><?= (int)($msg['id'] ?? 0) ?></td>
+                            <td><strong class="text-dark"><?= esc($msg['name'] ?? '') ?></strong></td>
                             <td>
-                                <?= $msg['is_read'] ? '<span class="badge bg-secondary">Read</span>' : '<span class="badge bg-danger">Unread</span>' ?>
+                                <a href="tel:<?= esc($msg['mobile'] ?? '') ?>" class="text-decoration-none text-dark fw-semibold">
+                                    <?= esc(format_indian_mobile($msg['mobile'] ?? '', true)) ?>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="mailto:<?= esc($msg['email'] ?? '') ?>" class="text-decoration-none text-muted">
+                                    <?= esc($msg['email'] ?? '') ?>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 250px;">
+                                    <?= esc($msg['subject'] ?? '') ?>
+                                </div>
+                            </td>
+                            <td>
+                                <?= !empty($msg['created_at']) ? date('d M Y, h:i A', strtotime($msg['created_at'])) : '—' ?>
+                            </td>
+                            <td>
+                                <?= !empty($msg['is_read']) ? '<span class="badge bg-secondary">Read</span>' : '<span class="badge bg-danger">Unread</span>' ?>
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <a href="<?= base_url('admin/contact-messages/' . $msg['id']) ?>" class="btn btn-sm btn-outline-primary" title="View Message">
+                                    <a href="<?= base_url('admin/contact-messages/' . ($msg['id'] ?? 0)) ?>" class="btn btn-sm btn-outline-primary" title="View Message">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="<?= base_url('admin/contact-messages/delete/' . $msg['id']) ?>" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Delete this message?')">
+                                    <a href="<?= base_url('admin/contact-messages/delete/' . ($msg['id'] ?? 0)) ?>" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this message?')">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>
