@@ -30,7 +30,8 @@ class WishlistItemModel extends Model
                     ->join('categories', 'categories.id = products.category_id', 'left')
                     ->join('brands', 'brands.id = products.brand_id', 'left')
                     ->where('wishlists.user_id', $userId)
-                    ->where('products.status', 'active')
+                    ->where('products.is_active', 1)
+                    ->where('products.deleted_at', null)
                     ->orderBy('wishlist_items.id', 'DESC')
                     ->findAll();
     }

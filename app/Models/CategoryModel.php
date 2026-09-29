@@ -19,6 +19,7 @@ class CategoryModel extends Model
         'image',
         'icon',
         'is_featured',
+        'is_active',
         'status',
         'sort_order',
     ];
@@ -30,9 +31,15 @@ class CategoryModel extends Model
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    public function getActiveCategories($featuredOnly = false)
+    /**
+     * Retrieve all active categories ordered by sort_order and name.
+     *
+     * @param bool $featuredOnly
+     * @return array
+     */
+    public function getActiveCategories(bool $featuredOnly = false): array
     {
-        $builder = $this->where('status', 'active');
+        $builder = $this->where('is_active', 1)->where('deleted_at', null);
         if ($featuredOnly) {
             $builder->where('is_featured', 1);
         }

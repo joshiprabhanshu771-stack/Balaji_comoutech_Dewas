@@ -18,12 +18,15 @@ class ServiceModel extends Model
         'icon',
         'image',
         'short_description',
+        'description',
         'full_description',
         'features',
         'turnaround_time',
         'starting_price',
         'is_featured',
+        'is_active',
         'status',
+        'sort_order',
     ];
 
     // Dates
@@ -33,12 +36,18 @@ class ServiceModel extends Model
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    public function getActiveServices($featuredOnly = false)
+    /**
+     * Retrieve active services.
+     *
+     * @param bool $featuredOnly
+     * @return array
+     */
+    public function getActiveServices(bool $featuredOnly = false): array
     {
-        $builder = $this->where('status', 'active');
+        $builder = $this->where('is_active', 1)->where('deleted_at', null);
         if ($featuredOnly) {
             $builder->where('is_featured', 1);
         }
-        return $builder->orderBy('id', 'ASC')->findAll();
+        return $builder->orderBy('sort_order', 'ASC')->orderBy('id', 'ASC')->findAll();
     }
 }

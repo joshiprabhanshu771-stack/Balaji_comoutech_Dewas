@@ -10,9 +10,9 @@
             <ol class="breadcrumb mb-0 small">
                 <li class="breadcrumb-item"><a href="<?= base_url('/') ?>" class="text-decoration-none text-muted">Home</a></li>
                 <li class="breadcrumb-item"><a href="<?= base_url('products') ?>" class="text-decoration-none text-muted">Products</a></li>
-                <?php if ($activeCategory): ?>
+                <?php if (!empty($activeCategory)): ?>
                     <li class="breadcrumb-item active text-primary" aria-current="page"><?= esc($activeCategory['name']) ?></li>
-                <?php elseif ($activeBrand): ?>
+                <?php elseif (!empty($activeBrand)): ?>
                     <li class="breadcrumb-item active text-primary" aria-current="page"><?= esc($activeBrand['name']) ?></li>
                 <?php endif; ?>
             </ol>
@@ -27,7 +27,9 @@
             <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold text-dark mb-0"><i class="bi bi-funnel-fill text-primary me-1"></i> Filter Products</h5>
-                    <a href="<?= base_url('products') ?>" class="text-decoration-none small text-danger fw-bold">Reset</a>
+                    <?php if (!empty($filters['category_slug']) || !empty($filters['brand_slug']) || !empty($filters['search']) || !empty($filters['stock_status']) || (!empty($filters['sort']) && $filters['sort'] !== 'latest')): ?>
+                        <a href="<?= base_url('products') ?>" class="text-decoration-none small text-danger fw-bold"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</a>
+                    <?php endif; ?>
                 </div>
 
                 <form action="<?= base_url('products') ?>" method="GET" id="filterForm">
@@ -42,7 +44,7 @@
                         <div class="d-flex flex-column gap-2">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="category" value="" id="catAll" <?= empty($filters['category_slug']) ? 'checked' : '' ?> onchange="this.form.submit()">
-                                <label class="form-check-label small" for="catAll">All Categories</label>
+                                <label class="form-check-label small text-muted" for="catAll">All Categories</label>
                             </div>
                             <?php foreach ($categories as $cat): ?>
                                 <div class="form-check">
@@ -59,7 +61,7 @@
                         <div class="d-flex flex-column gap-2">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="brand" value="" id="brandAll" <?= empty($filters['brand_slug']) ? 'checked' : '' ?> onchange="this.form.submit()">
-                                <label class="form-check-label small" for="brandAll">All Brands</label>
+                                <label class="form-check-label small text-muted" for="brandAll">All Brands</label>
                             </div>
                             <?php foreach ($brands as $br): ?>
                                 <div class="form-check">
@@ -77,6 +79,7 @@
                             <option value="">All Stock Status</option>
                             <option value="in_stock" <?= ($filters['stock_status'] ?? '') === 'in_stock' ? 'selected' : '' ?>>In Stock Only</option>
                             <option value="on_demand" <?= ($filters['stock_status'] ?? '') === 'on_demand' ? 'selected' : '' ?>>On Demand</option>
+                            <option value="out_of_stock" <?= ($filters['stock_status'] ?? '') === 'out_of_stock' ? 'selected' : '' ?>>Out of Stock</option>
                         </select>
                     </div>
 
@@ -110,20 +113,37 @@
             <!-- Header bar with result count -->
             <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm border flex-wrap gap-2">
                 <div>
-                    <span class="text-muted small">Showing <strong><?= count($products) ?></strong> of <strong><?= $totalItems ?></strong> products</span>
+                    <span class="text-muted small">Showing <strong><?= count($products) ?></strong> of <strong><?= (int)$totalItems ?></strong> products</span>
                     <?php if (!empty($filters['search'])): ?>
                         <span class="badge bg-light text-dark ms-2 border">Search: "<?= esc($filters['search']) ?>"</span>
                     <?php endif; ?>
+                    <?php if (!empty($activeCategory)): ?>
+                        <span class="badge bg-primary bg-opacity-10 text-primary ms-1 border border-primary border-opacity-25">Category: <?= esc($activeCategory['name']) ?></span>
+                    <?php endif; ?>
+                    <?php if (!empty($activeBrand)): ?>
+                        <span class="badge bg-info bg-opacity-10 text-info ms-1 border border-info border-opacity-25">Brand: <?= esc($activeBrand['name']) ?></span>
+                    <?php endif; ?>
                 </div>
+
+                <?php if (!empty($filters['search']) || !empty($filters['category_slug']) || !empty($filters['brand_slug']) || !empty($filters['stock_status'])): ?>
+                    <a href="<?= base_url('products') ?>" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i> Clear Filters
+                    </a>
+                <?php endif; ?>
             </div>
 
             <?php if (empty($products)): ?>
-                <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-3">
                     <div class="text-muted mb-3 fs-1"><i class="bi bi-inbox"></i></div>
-                    <h4 class="fw-bold text-dark">No Products Found</h4>
-                    <p class="text-muted small mb-4">We couldn't find any products matching your selected filters or search terms.</p>
-                    <div>
-                        <a href="<?= base_url('products') ?>" class="btn btn-primary fw-bold px-4">View All Products</a>
+                    <h4 class="fw-bold text-dark mb-2">No products available.</h4>
+                    <p class="text-muted small mb-4">We couldn't find any products matching your selected search query or filters.</p>
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        <a href="<?= base_url('products') ?>" class="btn btn-primary fw-bold px-4">
+                            <i class="bi bi-grid me-1"></i> View All Products
+                        </a>
+                        <a href="<?= get_whatsapp_url('Hello Gourav Joshi, I am looking for a product that is currently not available on your catalog.') ?>" target="_blank" class="btn btn-success fw-bold px-4">
+                            <i class="bi bi-whatsapp me-1"></i> Inquire on WhatsApp
+                        </a>
                     </div>
                 </div>
             <?php else: ?>
@@ -131,7 +151,7 @@
                     <?php foreach ($products as $product): ?>
                         <?php 
                             $isInWishlist = in_array($product['id'], $userWishlistIds ?? []);
-                            $waProductMsg = "Hello Gourav Joshi,\n\nI am interested in:\nProduct: {$product['name']}\nPrice: ₹" . number_format($product['discount_price'] ?? $product['price'], 2) . "\nLink: " . base_url('products/' . $product['slug']) . "\n\nPlease let me know availability.";
+                            $waProductMsg = "Hello Gourav Joshi,\n\nI am interested in:\nProduct: {$product['name']}\nPrice: ₹" . number_format($product['discount_price'] ?? $product['price'] ?? 0, 2) . "\nLink: " . base_url('products/' . $product['slug']) . "\n\nPlease let me know availability.";
                         ?>
                         <div class="col-md-6 col-xl-4">
                             <div class="custom-card product-card">
@@ -149,10 +169,14 @@
                                     <i class="bi <?= $isInWishlist ? 'bi-heart-fill' : 'bi-heart' ?>"></i>
                                 </button>
 
-                                <a href="<?= base_url('products/' . esc($product['slug'])) ?>" class="product-img-wrapper text-decoration-none">
-                                    <div class="text-center p-3 text-primary">
-                                        <i class="bi bi-pc-display fs-1"></i>
-                                    </div>
+                                <a href="<?= base_url('products/' . esc($product['slug'])) ?>" class="product-img-wrapper text-decoration-none d-flex align-items-center justify-content-center p-3" style="min-height: 200px; background-color: #f8fafc;">
+                                    <?php if (!empty($product['main_image'])): ?>
+                                        <img src="<?= base_url('uploads/products/' . esc($product['main_image'])) ?>" alt="<?= esc($product['name']) ?>" class="img-fluid" style="max-height: 170px; object-fit: contain;">
+                                    <?php else: ?>
+                                        <div class="text-center p-3 text-primary">
+                                            <i class="bi bi-pc-display fs-1"></i>
+                                        </div>
+                                    <?php endif; ?>
                                 </a>
 
                                 <div class="product-info">
@@ -162,11 +186,11 @@
                                     </a>
 
                                     <div class="product-price-box d-flex align-items-baseline mb-3">
-                                        <?php if ($product['discount_price']): ?>
-                                            <span class="product-price">₹<?= number_format($product['discount_price'], 2) ?></span>
-                                            <span class="product-old-price">₹<?= number_format($product['price'], 2) ?></span>
-                                        <?php elseif ($product['price']): ?>
-                                            <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
+                                        <?php if (!empty($product['discount_price'])): ?>
+                                            <span class="product-price">₹<?= number_format((float)$product['discount_price'], 2) ?></span>
+                                            <span class="product-old-price">₹<?= number_format((float)$product['price'], 2) ?></span>
+                                        <?php elseif (!empty($product['price'])): ?>
+                                            <span class="product-price">₹<?= number_format((float)$product['price'], 2) ?></span>
                                         <?php else: ?>
                                             <span class="product-price text-muted fs-6">Contact for Price</span>
                                         <?php endif; ?>

@@ -59,8 +59,8 @@ class ProductController extends BaseController
     {
         return view('admin/products/create', [
             'page_title' => 'Add New Product | Admin',
-            'categories' => $this->categoryModel->where('status', 'active')->findAll(),
-            'brands'     => $this->brandModel->where('status', 'active')->findAll(),
+            'categories' => $this->categoryModel->where('is_active', 1)->findAll(),
+            'brands'     => $this->brandModel->where('is_active', 1)->findAll(),
         ]);
     }
 
@@ -98,6 +98,7 @@ class ProductController extends BaseController
             $file->move($uploadPath, $imageName);
         }
 
+        $status = $this->request->getPost('status') ?? 'active';
         $data = [
             'category_id'       => (int)$this->request->getPost('category_id'),
             'brand_id'          => $this->request->getPost('brand_id') ? (int)$this->request->getPost('brand_id') : null,
@@ -105,6 +106,7 @@ class ProductController extends BaseController
             'slug'              => $slug,
             'sku'               => trim($this->request->getPost('sku') ?? ''),
             'short_description' => trim($this->request->getPost('short_description') ?? ''),
+            'description'       => $this->request->getPost('description') ?: $this->request->getPost('full_description'),
             'full_description'  => $this->request->getPost('full_description'),
             'specifications'    => trim($this->request->getPost('specifications') ?? ''),
             'price'             => $this->request->getPost('price') !== '' ? (float)$this->request->getPost('price') : null,
@@ -113,7 +115,8 @@ class ProductController extends BaseController
             'main_image'        => $imageName,
             'is_featured'       => $this->request->getPost('is_featured') ? 1 : 0,
             'is_hot_deal'       => $this->request->getPost('is_hot_deal') ? 1 : 0,
-            'status'            => $this->request->getPost('status') ?? 'active',
+            'is_active'         => $status === 'inactive' ? 0 : 1,
+            'status'            => $status,
         ];
 
         $productId = $this->productModel->insert($data);
@@ -175,6 +178,7 @@ class ProductController extends BaseController
             $file->move($uploadPath, $imageName);
         }
 
+        $status = $this->request->getPost('status') ?? 'active';
         $data = [
             'category_id'       => (int)$this->request->getPost('category_id'),
             'brand_id'          => $this->request->getPost('brand_id') ? (int)$this->request->getPost('brand_id') : null,
@@ -182,6 +186,7 @@ class ProductController extends BaseController
             'slug'              => $slug,
             'sku'               => trim($this->request->getPost('sku') ?? ''),
             'short_description' => trim($this->request->getPost('short_description') ?? ''),
+            'description'       => $this->request->getPost('description') ?: $this->request->getPost('full_description'),
             'full_description'  => $this->request->getPost('full_description'),
             'specifications'    => trim($this->request->getPost('specifications') ?? ''),
             'price'             => $this->request->getPost('price') !== '' ? (float)$this->request->getPost('price') : null,
@@ -190,7 +195,8 @@ class ProductController extends BaseController
             'main_image'        => $imageName,
             'is_featured'       => $this->request->getPost('is_featured') ? 1 : 0,
             'is_hot_deal'       => $this->request->getPost('is_hot_deal') ? 1 : 0,
-            'status'            => $this->request->getPost('status') ?? 'active',
+            'is_active'         => $status === 'inactive' ? 0 : 1,
+            'status'            => $status,
         ];
 
         $this->productModel->update($id, $data);

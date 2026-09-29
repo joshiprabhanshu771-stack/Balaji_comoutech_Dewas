@@ -29,7 +29,7 @@ class Brand extends BaseController
 
     public function detail($slug)
     {
-        $brand = $this->brandModel->where('slug', $slug)->where('status', 'active')->first();
+        $brand = $this->brandModel->where('slug', $slug)->where('is_active', 1)->first();
         if (!$brand) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Brand not found: ' . $slug);
         }

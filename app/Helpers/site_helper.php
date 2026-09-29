@@ -158,6 +158,32 @@ if (!function_exists('format_indian_mobile')) {
     }
 }
 
+if (!function_exists('get_10digit_mobile')) {
+    /**
+     * Extracts the 10-digit mobile number from any Indian mobile format (+91XXXXXXXXXX, 91XXXXXXXXXX, XXXXXXXXXX).
+     *
+     * @param string|null $mobile
+     * @return string
+     */
+    function get_10digit_mobile(?string $mobile): string
+    {
+        if ($mobile === null || trim($mobile) === '') {
+            return '';
+        }
+        $digits = preg_replace('/[^0-9]/', '', $mobile);
+        if (strlen($digits) === 12 && str_starts_with($digits, '91')) {
+            return substr($digits, 2);
+        }
+        if (strlen($digits) === 11 && str_starts_with($digits, '0')) {
+            return substr($digits, 1);
+        }
+        if (strlen($digits) === 10) {
+            return $digits;
+        }
+        return $digits;
+    }
+}
+
 if (!function_exists('get_whatsapp_url')) {
     /**
      * Generates a direct WhatsApp click-to-chat URL with safe phone number normalization.

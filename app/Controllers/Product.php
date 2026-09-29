@@ -102,7 +102,8 @@ class Product extends BaseController
         // Related products in same category
         $relatedProducts = $this->productModel->where('category_id', $product['category_id'])
                                               ->where('id !=', $product['id'])
-                                              ->where('status', 'active')
+                                              ->where('is_active', 1)
+                                              ->where('deleted_at', null)
                                               ->orderBy('id', 'DESC')
                                               ->limit(4)
                                               ->findAll();

@@ -17,8 +17,11 @@ class BrandModel extends Model
         'slug',
         'logo',
         'description',
+        'website',
         'is_featured',
+        'is_active',
         'status',
+        'sort_order',
     ];
 
     // Dates
@@ -28,9 +31,15 @@ class BrandModel extends Model
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    public function getActiveBrands($featuredOnly = false)
+    /**
+     * Retrieve all active brands ordered by name.
+     *
+     * @param bool $featuredOnly
+     * @return array
+     */
+    public function getActiveBrands(bool $featuredOnly = false): array
     {
-        $builder = $this->where('status', 'active');
+        $builder = $this->where('is_active', 1)->where('deleted_at', null);
         if ($featuredOnly) {
             $builder->where('is_featured', 1);
         }

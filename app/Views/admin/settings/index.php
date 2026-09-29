@@ -60,7 +60,7 @@
                         <label class="form-label fw-semibold small">Helpline Phone Number</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light fw-bold text-muted">+91</span>
-                            <input type="tel" name="settings[contact_phone]" class="form-control" value="<?= esc(ltrim($settings['contact_phone'] ?? '', '+91')) ?>" placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
+                            <input type="tel" name="settings[contact_phone]" class="form-control" value="<?= esc(get_10digit_mobile($settings['contact_phone'] ?? '')) ?>" placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
                         </div>
                         <div class="form-text small">Accepts 10-digit number (e.g. 9826012345) or +919826012345.</div>
                     </div>
@@ -68,7 +68,7 @@
                         <label class="form-label fw-semibold small">WhatsApp Number</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light fw-bold text-muted">+91</span>
-                            <input type="tel" name="settings[whatsapp_number]" class="form-control font-monospace" value="<?= esc(ltrim($settings['whatsapp_number'] ?? '', '+91')) ?>" placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
+                            <input type="tel" name="settings[whatsapp_number]" class="form-control font-monospace" value="<?= esc(get_10digit_mobile($settings['whatsapp_number'] ?? '')) ?>" placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
                         </div>
                         <div class="form-text small">Normalized and stored automatically as +91XXXXXXXXXX.</div>
                     </div>
