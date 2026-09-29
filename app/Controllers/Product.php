@@ -30,7 +30,7 @@ class Product extends BaseController
         $stockStatus  = $this->request->getGet('stock');
         $page         = (int)($this->request->getGet('page') ?? 1);
         $perPage      = 12;
-        $offset       = ($page - 1) * $perPage;
+        $offset       = max(0, ($page - 1) * $perPage);
 
         $filters = [
             'category_slug' => $categorySlug,
@@ -40,24 +40,38 @@ class Product extends BaseController
             'stock_status'  => $stockStatus,
         ];
 
-        $products   = $this->productModel->getFilteredProducts($filters, $perPage, $offset);
-        $totalItems = $this->productModel->countFilteredProducts($filters);
-        $totalPages = ceil($totalItems / $perPage);
+        try {
+            $products   = $this->productModel->getFilteredProducts($filters, $perPage, $offset);
+            $totalItems = $this->productModel->countFilteredProducts($filters);
+            $categories = $this->categoryModel->getActiveCategories();
+            $brands     = $this->brandModel->getActiveBrands();
 
-        $categories = $this->categoryModel->getActiveCategories();
-        $brands     = $this->brandModel->getActiveBrands();
+            $activeCategory = $categorySlug ? $this->categoryModel->where('slug', $categorySlug)->where('is_active', 1)->first() : null;
+            $activeBrand    = $brandSlug ? $this->brandModel->where('slug', $brandSlug)->where('is_active', 1)->first() : null;
+        } catch (\Throwable $e) {
+            log_message('error', 'Product::index data error: ' . $e->getMessage());
+            $products       = [];
+            $totalItems     = 0;
+            $categories     = [];
+            $brands         = [];
+            $activeCategory = null;
+            $activeBrand    = null;
+        }
+
+        $totalPages = $perPage > 0 ? (int)ceil($totalItems / $perPage) : 1;
 
         // User Wishlist
         $userWishlistIds = [];
         if (session()->get('isLoggedIn')) {
-            $wishlistItemModel = new WishlistItemModel();
-            $items = $wishlistItemModel->getUserWishlistItems(session()->get('user_id'));
-            $userWishlistIds = array_column($items, 'product_id');
+            try {
+                $wishlistItemModel = new WishlistItemModel();
+                $items = $wishlistItemModel->getUserWishlistItems(session()->get('user_id'));
+                $userWishlistIds = array_column($items, 'product_id');
+            } catch (\Throwable $e) {
+                log_message('error', 'Product::index wishlist error: ' . $e->getMessage());
+                $userWishlistIds = [];
+            }
         }
-
-        // Active Category / Brand Object for SEO / Breadcrumb
-        $activeCategory = $categorySlug ? $this->categoryModel->where('slug', $categorySlug)->first() : null;
-        $activeBrand    = $brandSlug ? $this->brandModel->where('slug', $brandSlug)->first() : null;
 
         $pageTitle = 'Explore Computer Products & Hardware';
         if ($activeCategory) {
@@ -87,36 +101,61 @@ class Product extends BaseController
 
     public function detail($slug)
     {
-        $product = $this->productModel->getProductBySlug($slug);
+        try {
+            $product = $this->productModel->getProductBySlug($slug);
+        } catch (\Throwable $e) {
+            log_message('error', 'Product::detail getProductBySlug error: ' . $e->getMessage());
+            $product = null;
+        }
+
         if (!$product) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Product not found: ' . $slug);
         }
 
-        // Increment view count
-        $this->productModel->update($product['id'], ['views_count' => (int)$product['views_count'] + 1]);
+        // Increment view count safely
+        try {
+            $this->productModel->update($product['id'], ['views_count' => (int)($product['views_count'] ?? 0) + 1]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Product::detail increment view error: ' . $e->getMessage());
+        }
 
         // Gallery images
-        $imageModel = new ProductImageModel();
-        $galleryImages = $imageModel->where('product_id', $product['id'])->orderBy('sort_order', 'ASC')->findAll();
+        try {
+            $imageModel = new ProductImageModel();
+            $galleryImages = $imageModel->where('product_id', $product['id'])->orderBy('sort_order', 'ASC')->findAll();
+        } catch (\Throwable $e) {
+            log_message('error', 'Product::detail gallery image error: ' . $e->getMessage());
+            $galleryImages = [];
+        }
 
         // Related products in same category
-        $relatedProducts = $this->productModel->where('category_id', $product['category_id'])
-                                              ->where('id !=', $product['id'])
-                                              ->where('is_active', 1)
-                                              ->where('deleted_at', null)
-                                              ->orderBy('id', 'DESC')
-                                              ->limit(4)
-                                              ->findAll();
+        try {
+            $relatedProducts = $this->productModel->where('category_id', $product['category_id'])
+                                                  ->where('id !=', $product['id'])
+                                                  ->where('is_active', 1)
+                                                  ->where('deleted_at', null)
+                                                  ->orderBy('id', 'DESC')
+                                                  ->limit(4)
+                                                  ->findAll();
+        } catch (\Throwable $e) {
+            log_message('error', 'Product::detail related products error: ' . $e->getMessage());
+            $relatedProducts = [];
+        }
 
         // Check if in wishlist
         $inWishlist = false;
         if (session()->get('isLoggedIn')) {
-            $wishlistItemModel = new WishlistItemModel();
-            $inWishlist = $wishlistItemModel->isProductInWishlist(session()->get('user_id'), $product['id']);
+            try {
+                $wishlistItemModel = new WishlistItemModel();
+                $inWishlist = $wishlistItemModel->isProductInWishlist(session()->get('user_id'), $product['id']);
+            } catch (\Throwable $e) {
+                log_message('error', 'Product::detail wishlist check error: ' . $e->getMessage());
+                $inWishlist = false;
+            }
         }
 
         // WhatsApp inquiry message template
-        $priceText = $product['discount_price'] ? '₹' . number_format($product['discount_price'], 2) : ($product['price'] ? '₹' . number_format($product['price'], 2) : 'Price on Inquiry');
+        $priceText = !empty($product['discount_price']) ? '₹' . number_format((float)$product['discount_price'], 2) : (!empty($product['price']) ? '₹' . number_format((float)$product['price'], 2) : 'Price on Inquiry');
         $waMessage = "Hello Gourav Joshi / Balaji Computech,\n\nI am interested in:\nProduct: {$product['name']}\nSKU: {$product['sku']}\nPrice: {$priceText}\nLink: " . current_url() . "\n\nPlease let me know availability and best pricing. Thank you!";
         $whatsappUrl = get_whatsapp_url($waMessage);
 

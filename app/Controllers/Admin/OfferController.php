@@ -61,6 +61,10 @@ class OfferController extends BaseController
             $file->move($uploadPath, $imageName);
         }
 
+        $startDate = $this->request->getPost('start_date') ?: ($this->request->getPost('valid_from') ?: null);
+        $endDate   = $this->request->getPost('end_date') ?: ($this->request->getPost('valid_until') ?: null);
+        $isActive  = $this->request->getPost('is_active') ? 1 : 0;
+
         $this->offerModel->insert([
             'title'         => $title,
             'slug'          => $slug,
@@ -68,9 +72,12 @@ class OfferController extends BaseController
             'banner_image'  => $imageName,
             'discount_text' => trim($this->request->getPost('discount_text') ?? ''),
             'coupon_code'   => trim($this->request->getPost('coupon_code') ?? ''),
-            'valid_from'    => $this->request->getPost('valid_from') ?: null,
-            'valid_until'   => $this->request->getPost('valid_until') ?: null,
-            'is_active'     => $this->request->getPost('is_active') ? 1 : 0,
+            'start_date'    => $startDate,
+            'end_date'      => $endDate,
+            'valid_from'    => $startDate,
+            'valid_until'   => $endDate,
+            'is_active'     => $isActive,
+            'status'        => $isActive ? 'active' : 'inactive',
         ]);
 
         return redirect()->to(base_url('admin/offers'))->with('success', 'Offer created successfully!');
@@ -124,6 +131,10 @@ class OfferController extends BaseController
             $file->move($uploadPath, $imageName);
         }
 
+        $startDate = $this->request->getPost('start_date') ?: ($this->request->getPost('valid_from') ?: null);
+        $endDate   = $this->request->getPost('end_date') ?: ($this->request->getPost('valid_until') ?: null);
+        $isActive  = $this->request->getPost('is_active') ? 1 : 0;
+
         $this->offerModel->update($id, [
             'title'         => $title,
             'slug'          => $slug,
@@ -131,9 +142,12 @@ class OfferController extends BaseController
             'banner_image'  => $imageName,
             'discount_text' => trim($this->request->getPost('discount_text') ?? ''),
             'coupon_code'   => trim($this->request->getPost('coupon_code') ?? ''),
-            'valid_from'    => $this->request->getPost('valid_from') ?: null,
-            'valid_until'   => $this->request->getPost('valid_until') ?: null,
-            'is_active'     => $this->request->getPost('is_active') ? 1 : 0,
+            'start_date'    => $startDate,
+            'end_date'      => $endDate,
+            'valid_from'    => $startDate,
+            'valid_until'   => $endDate,
+            'is_active'     => $isActive,
+            'status'        => $isActive ? 'active' : 'inactive',
         ]);
 
         return redirect()->to(base_url('admin/offers'))->with('success', 'Offer updated successfully!');

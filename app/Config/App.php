@@ -204,10 +204,18 @@ class App extends BaseConfig
     {
         parent::__construct();
 
-        // Support both APP_BASE_URL (Vercel standard) and app.baseURL (.env standard)
+        // Support APP_BASE_URL (Vercel standard) and app.baseURL (.env standard)
         $configuredBaseUrl = env('APP_BASE_URL', env('app.baseURL', ''));
         if (!empty($configuredBaseUrl)) {
             $this->baseURL = rtrim($configuredBaseUrl, '/') . '/';
+        } elseif (!empty($_SERVER['HTTP_HOST'])) {
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+                || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+            $protocol = $isHttps ? 'https' : 'http';
+            $this->baseURL = $protocol . '://' . $_SERVER['HTTP_HOST'] . '/';
+        } elseif (!empty($_SERVER['VERCEL_URL'])) {
+            $this->baseURL = 'https://' . $_SERVER['VERCEL_URL'] . '/';
         }
 
         $configuredIndexPage = env('app.indexPage', null);

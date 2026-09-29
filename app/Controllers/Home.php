@@ -23,22 +23,40 @@ class Home extends BaseController
         $faqModel      = new FaqModel();
         $presenceModel = new PresenceModel();
 
-        $featuredCategories = $categoryModel->getActiveCategories(true);
-        $allCategories      = $categoryModel->getActiveCategories(false);
-        $featuredBrands      = $brandModel->getActiveBrands(true);
-        $featuredProducts    = $productModel->getFilteredProducts(['is_featured' => 1], 8);
-        $hotDeals           = $productModel->getFilteredProducts(['is_hot_deal' => 1], 6);
-        $services           = $serviceModel->getActiveServices(true);
-        $offers             = $offerModel->getActiveOffers();
-        $faqs               = $faqModel->where('is_active', 1)->orderBy('sort_order', 'ASC')->limit(6)->findAll();
-        $primaryLocation    = $presenceModel->getPrimaryLocation();
+        try {
+            $featuredCategories = $categoryModel->getActiveCategories(true);
+            $allCategories      = $categoryModel->getActiveCategories(false);
+            $featuredBrands     = $brandModel->getActiveBrands(true);
+            $featuredProducts   = $productModel->getFilteredProducts(['is_featured' => 1], 8);
+            $hotDeals           = $productModel->getFilteredProducts(['is_hot_deal' => 1], 6);
+            $services           = $serviceModel->getActiveServices(true);
+            $offers             = $offerModel->getActiveOffers();
+            $faqs               = $faqModel->where('is_active', 1)->orderBy('sort_order', 'ASC')->limit(6)->findAll();
+            $primaryLocation    = $presenceModel->getPrimaryLocation();
+        } catch (\Throwable $e) {
+            log_message('error', 'Home::index data retrieval error: ' . $e->getMessage());
+            $featuredCategories = [];
+            $allCategories      = [];
+            $featuredBrands     = [];
+            $featuredProducts   = [];
+            $hotDeals           = [];
+            $services           = [];
+            $offers             = [];
+            $faqs               = [];
+            $primaryLocation    = null;
+        }
 
         // User wishlist product IDs if logged in
         $userWishlistIds = [];
         if (session()->get('isLoggedIn')) {
-            $wishlistItemModel = new WishlistItemModel();
-            $items = $wishlistItemModel->getUserWishlistItems(session()->get('user_id'));
-            $userWishlistIds = array_column($items, 'product_id');
+            try {
+                $wishlistItemModel = new WishlistItemModel();
+                $items = $wishlistItemModel->getUserWishlistItems(session()->get('user_id'));
+                $userWishlistIds = array_column($items, 'product_id');
+            } catch (\Throwable $e) {
+                log_message('error', 'Home::index wishlist error: ' . $e->getMessage());
+                $userWishlistIds = [];
+            }
         }
 
         $data = [
@@ -60,8 +78,13 @@ class Home extends BaseController
 
     public function presence()
     {
-        $presenceModel = new PresenceModel();
-        $locations = $presenceModel->orderBy('is_primary', 'DESC')->findAll();
+        try {
+            $presenceModel = new PresenceModel();
+            $locations = $presenceModel->orderBy('is_primary', 'DESC')->findAll();
+        } catch (\Throwable $e) {
+            log_message('error', 'Home::presence error: ' . $e->getMessage());
+            $locations = [];
+        }
 
         return view('our_presence', [
             'page_title' => 'Our Store Presence & Location | Balaji Computech Dewas',

@@ -62,18 +62,21 @@ class ServiceController extends BaseController
             $file->move($uploadPath, $imageName);
         }
 
+        $status = $this->request->getPost('status') ?? 'active';
         $this->serviceModel->insert([
             'name'              => $name,
             'slug'              => $slug,
             'icon'              => trim($this->request->getPost('icon') ?? 'bi bi-tools'),
             'image'             => $imageName,
             'short_description' => trim($this->request->getPost('short_description') ?? ''),
+            'description'       => $this->request->getPost('description') ?: $this->request->getPost('full_description'),
             'full_description'  => $this->request->getPost('full_description'),
             'features'          => trim($this->request->getPost('features') ?? ''),
             'turnaround_time'   => trim($this->request->getPost('turnaround_time') ?? ''),
             'starting_price'    => $this->request->getPost('starting_price') !== '' ? (float)$this->request->getPost('starting_price') : null,
             'is_featured'       => $this->request->getPost('is_featured') ? 1 : 0,
-            'status'            => $this->request->getPost('status') ?? 'active',
+            'is_active'         => $status === 'inactive' ? 0 : 1,
+            'status'            => $status,
         ]);
 
         return redirect()->to(base_url('admin/services'))->with('success', 'Service created successfully!');
@@ -128,18 +131,21 @@ class ServiceController extends BaseController
             $file->move($uploadPath, $imageName);
         }
 
+        $status = $this->request->getPost('status') ?? 'active';
         $this->serviceModel->update($id, [
             'name'              => $name,
             'slug'              => $slug,
             'icon'              => trim($this->request->getPost('icon') ?? 'bi bi-tools'),
             'image'             => $imageName,
             'short_description' => trim($this->request->getPost('short_description') ?? ''),
+            'description'       => $this->request->getPost('description') ?: $this->request->getPost('full_description'),
             'full_description'  => $this->request->getPost('full_description'),
             'features'          => trim($this->request->getPost('features') ?? ''),
             'turnaround_time'   => trim($this->request->getPost('turnaround_time') ?? ''),
             'starting_price'    => $this->request->getPost('starting_price') !== '' ? (float)$this->request->getPost('starting_price') : null,
             'is_featured'       => $this->request->getPost('is_featured') ? 1 : 0,
-            'status'            => $this->request->getPost('status') ?? 'active',
+            'is_active'         => $status === 'inactive' ? 0 : 1,
+            'status'            => $status,
         ]);
 
         return redirect()->to(base_url('admin/services'))->with('success', 'Service updated successfully!');

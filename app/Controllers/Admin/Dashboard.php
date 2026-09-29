@@ -15,27 +15,42 @@ class Dashboard extends BaseController
 {
     public function index()
     {
-        $productModel  = new ProductModel();
-        $categoryModel = new CategoryModel();
-        $inquiryModel  = new InquiryModel();
-        $serviceModel  = new ServiceModel();
-        $offerModel    = new OfferModel();
-        $userModel     = new UserModel();
-        $contactModel  = new ContactMessageModel();
-
         $stats = [
-            'total_products'   => $productModel->countAllResults(),
-            'total_categories' => $categoryModel->countAllResults(),
-            'total_inquiries'  => $inquiryModel->countAllResults(),
-            'pending_inquiries'=> $inquiryModel->where('status', 'pending')->countAllResults(),
-            'total_services'   => $serviceModel->countAllResults(),
-            'active_offers'    => $offerModel->where('is_active', 1)->countAllResults(),
-            'total_customers'  => $userModel->where('role_id', 2)->countAllResults(),
-            'unread_messages'  => $contactModel->where('is_read', 0)->countAllResults(),
+            'total_products'    => 0,
+            'total_categories'  => 0,
+            'total_inquiries'   => 0,
+            'pending_inquiries' => 0,
+            'total_services'    => 0,
+            'active_offers'     => 0,
+            'total_customers'   => 0,
+            'unread_messages'   => 0,
         ];
+        $recentInquiries = [];
+        $recentMessages  = [];
 
-        $recentInquiries = $inquiryModel->getInquiriesWithDetails([], 8);
-        $recentMessages  = $contactModel->orderBy('id', 'DESC')->limit(5)->findAll();
+        try {
+            $productModel  = new ProductModel();
+            $categoryModel = new CategoryModel();
+            $inquiryModel  = new InquiryModel();
+            $serviceModel  = new ServiceModel();
+            $offerModel    = new OfferModel();
+            $userModel     = new UserModel();
+            $contactModel  = new ContactMessageModel();
+
+            $stats['total_products']    = (int)$productModel->countAllResults();
+            $stats['total_categories']  = (int)$categoryModel->countAllResults();
+            $stats['total_inquiries']   = (int)$inquiryModel->countAllResults();
+            $stats['pending_inquiries'] = (int)$inquiryModel->where('status', 'pending')->countAllResults();
+            $stats['total_services']    = (int)$serviceModel->countAllResults();
+            $stats['active_offers']     = (int)$offerModel->where('is_active', 1)->countAllResults();
+            $stats['total_customers']   = (int)$userModel->where('role_id', 2)->countAllResults();
+            $stats['unread_messages']   = (int)$contactModel->where('is_read', 0)->countAllResults();
+
+            $recentInquiries = $inquiryModel->getInquiriesWithDetails([], 8);
+            $recentMessages  = $contactModel->orderBy('id', 'DESC')->limit(5)->findAll();
+        } catch (\Throwable $e) {
+            log_message('error', 'Admin Dashboard stats load error: ' . $e->getMessage());
+        }
 
         return view('admin/dashboard', [
             'page_title'      => 'Shopkeeper Admin Dashboard | Balaji Computech',

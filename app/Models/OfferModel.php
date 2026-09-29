@@ -15,13 +15,16 @@ class OfferModel extends Model
     protected $allowedFields    = [
         'title',
         'slug',
-        'description',
-        'banner_image',
         'discount_text',
         'coupon_code',
+        'description',
+        'banner_image',
+        'start_date',
+        'end_date',
         'valid_from',
         'valid_until',
         'is_active',
+        'status',
     ];
 
     // Dates
@@ -31,13 +34,19 @@ class OfferModel extends Model
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    public function getActiveOffers()
+    /**
+     * Retrieve active promotional offers.
+     *
+     * @return array
+     */
+    public function getActiveOffers(): array
     {
         $today = date('Y-m-d');
         return $this->where('is_active', 1)
+                    ->where('deleted_at', null)
                     ->groupStart()
-                        ->where('valid_until >=', $today)
-                        ->orWhere('valid_until IS NULL')
+                        ->where('end_date >=', $today)
+                        ->orWhere('end_date IS NULL')
                     ->groupEnd()
                     ->orderBy('id', 'DESC')
                     ->findAll();

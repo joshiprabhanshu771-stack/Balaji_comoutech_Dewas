@@ -25,12 +25,19 @@ class Service extends BaseController
 
     public function detail($slug)
     {
-        $service = $this->serviceModel->where('slug', $slug)->where('status', 'active')->first();
+        $service = $this->serviceModel->where('slug', $slug)
+                                      ->where('is_active', 1)
+                                      ->where('deleted_at', null)
+                                      ->first();
+
         if (!$service) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Service not found: ' . $slug);
         }
 
-        $allServices = $this->serviceModel->where('status', 'active')->where('id !=', $service['id'])->findAll();
+        $allServices = $this->serviceModel->where('is_active', 1)
+                                          ->where('deleted_at', null)
+                                          ->where('id !=', $service['id'])
+                                          ->findAll();
 
         $priceText = $service['starting_price'] ? 'Starting from ₹' . number_format($service['starting_price'], 2) : 'Contact for Estimate';
         $waMessage = "Hello Gourav Joshi / Balaji Computech,\n\nI need service assistance for:\nService: {$service['name']}\nEstimated: {$priceText}\nLink: " . current_url() . "\n\nPlease let me know appointment schedule and turnaround time. Thanks!";
