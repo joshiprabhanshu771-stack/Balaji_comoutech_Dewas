@@ -196,7 +196,7 @@
                                 <label class="form-label fw-semibold">Mobile Number <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light fw-bold text-muted">+91</span>
-                                    <input type="tel" name="mobile" class="form-control" required placeholder="9826012345" pattern="^(\+91[\-\s]?)?[6-9]\d{9}$" maxlength="13" inputmode="numeric">
+                                    <input type="tel" name="mobile" class="form-control" required placeholder="9826012345" pattern="^[6-9]\d{9}$" maxlength="10" minlength="10" inputmode="numeric" title="Please enter a valid 10-digit Indian mobile number.">
                                 </div>
                             </div>
                         </div>

@@ -23,7 +23,10 @@
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold small">Mobile Phone</label>
-                    <input type="tel" name="mobile" class="form-control" required value="<?= old('mobile', $user['mobile']) ?>">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light fw-bold text-muted">+91</span>
+                        <input type="tel" name="mobile" class="form-control" required value="<?= esc(get_10digit_mobile(old('mobile', $user['mobile'] ?? ''))) ?>" placeholder="9826012345" pattern="^[6-9]\d{9}$" maxlength="10" minlength="10" inputmode="numeric" title="Please enter a valid 10-digit Indian mobile number.">
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary fw-bold px-4 py-2 mt-2">

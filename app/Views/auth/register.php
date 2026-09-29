@@ -35,8 +35,8 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Mobile Number <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-phone"></i></span>
-                                <input type="tel" name="mobile" class="form-control border-start-0 ps-0" required placeholder="98260 00000" value="<?= old('mobile') ?>">
+                                <span class="input-group-text bg-light text-muted border-end-0 fw-bold">+91</span>
+                                <input type="tel" name="mobile" class="form-control border-start-0 ps-0" required placeholder="9826012345" pattern="^[6-9]\d{9}$" maxlength="10" minlength="10" inputmode="numeric" title="Please enter a valid 10-digit Indian mobile number." value="<?= old('mobile') ?>">
                             </div>
                         </div>
                     </div>

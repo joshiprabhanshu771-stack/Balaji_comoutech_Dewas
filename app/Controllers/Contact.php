@@ -9,8 +9,13 @@ class Contact extends BaseController
 {
     public function index()
     {
-        $presenceModel = new PresenceModel();
-        $primaryLocation = $presenceModel->getPrimaryLocation();
+        try {
+            $presenceModel = new PresenceModel();
+            $primaryLocation = $presenceModel->getPrimaryLocation();
+        } catch (\Throwable $e) {
+            log_message('error', 'Contact::index error: ' . $e->getMessage());
+            $primaryLocation = null;
+        }
 
         return view('contact', [
             'page_title'      => 'Contact Us & Shop Location | Balaji Computech Dewas',
@@ -75,9 +80,9 @@ class Contact extends BaseController
             ]);
         }
 
-        $email = strtolower(trim((string)$this->request->getPost('email')));
-        $name = trim((string)$this->request->getPost('name'));
-        $subject = trim((string)$this->request->getPost('subject'));
+        $email       = strtolower(trim((string)$this->request->getPost('email')));
+        $name        = trim((string)$this->request->getPost('name'));
+        $subject     = trim((string)$this->request->getPost('subject'));
         $messageText = trim((string)$this->request->getPost('message'));
 
         try {

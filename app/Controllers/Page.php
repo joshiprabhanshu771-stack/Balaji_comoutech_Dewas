@@ -8,8 +8,13 @@ class Page extends BaseController
 {
     public function view($slug)
     {
-        $pageModel = new PageModel();
-        $page = $pageModel->getPageBySlug($slug);
+        try {
+            $pageModel = new PageModel();
+            $page = $pageModel->getPageBySlug($slug);
+        } catch (\Throwable $e) {
+            log_message('error', 'Page::view error: ' . $e->getMessage());
+            $page = null;
+        }
 
         if (!$page) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Page not found: ' . $slug);

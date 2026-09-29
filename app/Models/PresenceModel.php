@@ -13,6 +13,7 @@ class PresenceModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'title',
+        'address',
         'address_line1',
         'address_line2',
         'city',
@@ -26,6 +27,7 @@ class PresenceModel extends Model
         'google_maps_link',
         'opening_hours',
         'is_primary',
+        'is_active',
     ];
 
     // Dates
@@ -34,12 +36,17 @@ class PresenceModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    public function getPrimaryLocation()
+    public function getPrimaryLocation(): ?array
     {
-        $primary = $this->where('is_primary', 1)->first();
-        if (!$primary) {
-            $primary = $this->first();
+        try {
+            $primary = $this->where('is_primary', 1)->first();
+            if (!$primary) {
+                $primary = $this->first();
+            }
+            return $primary;
+        } catch (\Throwable $e) {
+            log_message('error', 'PresenceModel::getPrimaryLocation error: ' . $e->getMessage());
+            return null;
         }
-        return $primary;
     }
 }
